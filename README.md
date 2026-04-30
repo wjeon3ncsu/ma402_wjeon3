@@ -1,1 +1,142 @@
-# ma402_wjeon3
+# MA402 Final Project — Minimum Surface Area Problem
+
+> **Course:** MA402 · Department of Mathematics, NC State University · Spring 2026  
+> **Solver:** TAO L-BFGS (LMVM) via `petsc4py`  
+> **Reference C code:** [`src/tao/unconstrained/tutorials/minsurf1.c`](https://petsc.org/main/src/tao/unconstrained/tutorials/minsurf1.c.html)
+
+---
+
+## Problem Description
+
+We find a function $u(x, y)$ over the 2D domain $\Omega = [-0.5, 0.5]^2$ that minimizes the surface area of the graph $z = u(x, y)$:
+
+$$
+\min_{u} \; f(u) = \iint_{\Omega} \sqrt{1 + \left(\frac{\partial u}{\partial x}\right)^2 + \left(\frac{\partial u}{\partial y}\right)^2} \, dx \, dy
+$$
+
+subject to Dirichlet boundary conditions on all four sides, determined by a Joukowski-style complex mapping.
+
+This is the classical **Plateau's problem** — the shape of a soap film stretched across a wire frame. The solver discretizes the domain on an $m_x \times m_y$ uniform grid and minimizes the resulting nonlinear objective using the **L-BFGS** (Limited-memory BFGS) algorithm from PETSc's TAO library.
+
+---
+
+## Repository Structure
+
+```
+my-petsc4py-project/
+├── README.md
+├── tutorial_module.py            # MinSurfSolver class — TAO L-BFGS solver
+├── tutorial_presentation.ipynb  # Jupyter Notebook — visualization & analysis
+└── docs/
+    ├── setObjectiveGradient.md   # NumPy docstring + source mapping
+    ├── setTolerances.md          # NumPy docstring + source mapping
+    └── getConvergedReason.md     # NumPy docstring + source mapping
+```
+
+---
+
+## Installation
+
+```bash
+# Install PETSc and petsc4py (pip wheels bundle PETSc automatically)
+pip install petsc petsc4py
+
+# Other dependencies
+pip install numpy matplotlib
+```
+
+> **Note:** `petsc4py` requires a compatible MPI installation on some systems.  
+> On Google Colab: `!pip install petsc petsc4py` is sufficient.
+
+---
+
+## Usage
+
+### Run the solver directly
+
+```bash
+python tutorial_module.py
+```
+
+Expected output:
+
+```
+---- Minimum Surface Area Problem -----
+mx: 32     my: 32
+
+Converged Reason : 3
+Iterations       : 42
+Final Objective  : 1.381244
+```
+
+### Use as a module
+
+```python
+from tutorial_module import MinSurfSolver
+
+solver = MinSurfSolver(mx=32, my=32)
+solution = solver.solve()        # returns numpy.ndarray shape (my, mx)
+solver.plot_solution(solution)   # 2D contour + 3D surface plots
+```
+
+### Run the Jupyter Notebook
+
+Open `tutorial_presentation.ipynb` and run all cells (`Restart & Run All`).  
+The notebook covers:
+- Problem formulation with LaTeX equations
+- Convergence history plot (iteration vs. objective value)
+- 2D contour and 3D surface visualizations
+- Grid resolution comparison (16×16, 32×32, 64×64)
+
+---
+
+## AI Translation Experience
+
+### What we did
+
+The original problem is implemented in C (`minsurf1.c`). We used an AI assistant (ChatGPT) to translate the C code into a `petsc4py` Python script, then debugged and verified the result.
+
+### Errors encountered and how we fixed them
+
+| Error | Cause | Fix |
+|---|---|---|
+| `AttributeError: TAO has no attribute 'setObjectiveAndGradient'` | AI used the C function name directly | Changed to correct Python API: `tao.setObjectiveGradient()` |
+| `AttributeError: 'MinSurfSolver' object has no attribute 'tao'` | `tao` object was local to `solve()` and destroyed before return | Accessed convergence info inside `solve()` before `tao.destroy()` |
+| `TypeError: monitor() missing 1 required positional argument` | TAO monitor callback signature is `Callable[[TAO], None]`, not `(tao, ctx)` | Removed context argument; used closure to capture `history` list instead |
+| Boundary condition mismatch | AI's Newton iteration for the Joukowski mapping had sign errors | Traced against the original C `MSA_BoundaryConditions()` and corrected `nf1`, `nf2` signs |
+
+### Key takeaway
+
+AI translation is a useful starting point but requires careful verification against the actual petsc4py API. The Cython source (`TAO.pyx`) and PETSc manual pages were essential references for debugging hallucinated API calls.
+
+---
+
+## Source Mapping (M2)
+
+Three petsc4py functions were traced from Python → Cython → C:
+
+| Python method | Cython file | C function |
+|---|---|---|
+| `tao.setObjectiveGradient()` | `TAO.pyx` L309 | `TaoSetObjectiveAndGradient` |
+| `tao.setTolerances()` | `TAO.pyx` ~L1630 | `TaoSetTolerances` |
+| `tao.getConvergedReason()` | `TAO.pyx` L1244 | `TaoGetConvergedReason` |
+
+Full documentation with GitLab links and NumPy-style docstrings is in [`docs/`](docs/).
+
+---
+
+## Recommended Git Commit History
+
+```
+git log --oneline
+
+a1b2c3d docs: add getConvergedReason NumPy docstring and source mapping
+d4e5f6g docs: add setTolerances NumPy docstring and source mapping
+h7i8j9k docs: add setObjectiveGradient NumPy docstring and source mapping
+l0m1n2o notebook: add resolution comparison and convergence plot
+p3q4r5s notebook: add 3D surface and 2D contour visualizations
+t6u7v8w notebook: add tutorial_presentation.ipynb scaffold
+x9y0z1a feat: complete MinSurfSolver with boundary conditions and L-BFGS
+b2c3d4e feat: add MinSurfSolver class skeleton and initial point
+c3d4e5f init: project structure setup
+```
