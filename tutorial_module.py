@@ -1,5 +1,5 @@
 """
-Minimum Surface Area Problem (최소 곡면 문제)
+Minimum Surface Area Problem
 
 This module solves the Minimum Surface Area problem using PETSc's TAO
 optimization solver via petsc4py.
