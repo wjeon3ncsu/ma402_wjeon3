@@ -65,9 +65,11 @@ Expected output:
 mx: 32     my: 32
 
 Converged Reason : 3
-Iterations       : 42
-Final Objective  : 1.381244
+Iterations       : 61
+Final Objective  : 1.421041
 ```
+
+(Run on a single process. Iteration count and final objective will vary slightly with grid size — see the notebook's resolution comparison: 16×16 → ~1.4202, 32×32 → ~1.4210, 64×64 → ~1.4213.)
 
 ### Use as a module
 
@@ -102,7 +104,7 @@ The original problem is implemented in C (`minsurf1.c`). We used an AI assistant
 |---|---|---|
 | `AttributeError: TAO has no attribute 'setObjectiveAndGradient'` | AI used the C function name directly | Changed to correct Python API: `tao.setObjectiveGradient()` |
 | `AttributeError: 'MinSurfSolver' object has no attribute 'tao'` | `tao` object was local to `solve()` and destroyed before return | Accessed convergence info inside `solve()` before `tao.destroy()` |
-| `TypeError: monitor() missing 1 required positional argument` | TAO monitor callback signature is `Callable[[TAO], None]`, not `(tao, ctx)` | Removed context argument; used closure to capture `history` list instead |
+| Could not capture per-iteration objective values via `tao.setMonitor` | The TAO monitor callback signature in petsc4py did not match what we wired up, and we wanted iteration-level history without fighting the monitor API | Skipped `setMonitor` entirely. In the notebook, subclassed `MinSurfSolver` as `MinSurfSolverWithHistory` and overrode `form_function_gradient` to append `(iteration, f)` to a module-level `history` list before delegating to `super().form_function_gradient(...)`. TAO calls the obj+grad callback at every evaluation, so this gives a full convergence trace. |
 | Boundary condition mismatch | AI's Newton iteration for the Joukowski mapping had sign errors | Traced against the original C `MSA_BoundaryConditions()` and corrected `nf1`, `nf2` signs |
 
 ### Key takeaway

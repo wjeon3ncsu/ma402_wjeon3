@@ -4,7 +4,7 @@
 
 | Layer | Location |
 |---|---|
-| **Python call** | `tao.setObjectiveGradient(form_function_gradient, None, user)` |
+| **Python call** | `tao.setObjectiveGradient(form_function_gradient, gradient_vec)` |
 | **Cython wrapper** | [`src/binding/petsc4py/src/petsc4py/PETSc/TAO.pyx`, line 309](https://gitlab.com/petsc/petsc/-/blob/release/src/binding/petsc4py/src/petsc4py/PETSc/TAO.pyx#L309) |
 | **C function** | `TaoSetObjectiveAndGradient` |
 | **C header** | [`include/petsctao.h`](https://gitlab.com/petsc/petsc/-/blob/release/include/petsctao.h) |
@@ -122,13 +122,14 @@ def setObjectiveGradient(self, objgrad, g=None, args=None, kargs=None):
     --------
     >>> from petsc4py import PETSc
     >>> def form_fg(tao, x, g):
-    ...     # compute f and fill g with gradient
+    ...     # compute f and fill g with gradient (in-place)
     ...     f = 0.0
     ...     # ... finite-difference stencil ...
     ...     return f
     >>> tao = PETSc.TAO().create(PETSc.COMM_WORLD)
     >>> tao.setType(PETSc.TAO.Type.LMVM)
-    >>> tao.setObjectiveGradient(form_fg, None)
+    >>> g_vec = PETSc.Vec().createSeq(N)
+    >>> tao.setObjectiveGradient(form_fg, g_vec)
     """
 ```
 

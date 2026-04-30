@@ -290,8 +290,10 @@ class MinSurfSolver:
 
         Returns
         -------
-        numpy.ndarray, shape (mx, my)
+        numpy.ndarray, shape (my, mx)
             The converged solution reshaped as a 2D grid.
+            Axis 0 corresponds to the y-direction (rows, length my),
+            axis 1 to the x-direction (columns, length mx).
         """
         mx, my = self.mx, self.my
         N = mx * my
