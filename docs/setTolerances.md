@@ -5,7 +5,7 @@
 | Layer | Location |
 |---|---|
 | **Python call** | `tao.setTolerances(gatol=1e-5, grtol=1e-5, gttol=0.0)` |
-| **Cython wrapper** | [`src/binding/petsc4py/src/petsc4py/PETSc/TAO.pyx`, ~line 1600](https://gitlab.com/petsc/petsc/-/blob/release/src/binding/petsc4py/src/petsc4py/PETSc/TAO.pyx) |
+| **Cython wrapper** | [`src/binding/petsc4py/src/petsc4py/PETSc/TAO.pyx`, line ~1630](https://gitlab.com/petsc/petsc/-/blob/release/src/binding/petsc4py/src/petsc4py/PETSc/TAO.pyx) (between `setMaximumIterations` L1191 and `getTolerances` L1665) |
 | **C function** | `TaoSetTolerances` |
 | **C header** | [`include/petsctao.h`](https://gitlab.com/petsc/petsc/-/blob/release/include/petsctao.h) |
 | **C source** | [`src/tao/interface/taosolver.c`](https://gitlab.com/petsc/petsc/-/blob/release/src/tao/interface/taosolver.c) |
