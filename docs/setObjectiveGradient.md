@@ -4,7 +4,7 @@
 
 | Layer | Location |
 |---|---|
-| **Python call** | `tao.setObjectiveGradient(self.form_function_gradient, g_vec)` |
+| **Python call** | `tao.setObjectiveGradient(form_function_gradient, None, user)` |
 | **Cython wrapper** | [`src/binding/petsc4py/src/petsc4py/PETSc/TAO.pyx`, line 309](https://gitlab.com/petsc/petsc/-/blob/release/src/binding/petsc4py/src/petsc4py/PETSc/TAO.pyx#L309) |
 | **C function** | `TaoSetObjectiveAndGradient` |
 | **C header** | [`include/petsctao.h`](https://gitlab.com/petsc/petsc/-/blob/release/include/petsctao.h) |
@@ -138,7 +138,8 @@ def setObjectiveGradient(self, objgrad, g=None, args=None, kargs=None):
 
 ```python
 # Register the combined objective + gradient callback.
-# The third argument (user) passes the MinSurfSolver instance
-# so the callback can access grid parameters (mx, my, hx, hy).
-tao.setObjectiveGradient(None, self.form_function_gradient, self)
+# g_vec is a pre-allocated PETSc Vec used to store the gradient output.
+# The callback (self.form_function_gradient) is a bound method of MinSurfSolver,
+# so it already has access to grid parameters (mx, my) via self.
+tao.setObjectiveGradient(self.form_function_gradient, g_vec)
 ```

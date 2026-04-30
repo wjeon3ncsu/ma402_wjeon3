@@ -94,7 +94,7 @@ The notebook covers:
 
 ### What we did
 
-The original problem is implemented in C (`minsurf1.c`). We used an AI assistant (ChatGPT) to translate the C code into a `petsc4py` Python script, then debugged and verified the result.
+The original problem is implemented in C (`minsurf1.c`). We used an AI assistant (Claude by Anthropic) to translate the C code into a `petsc4py` Python script, then debugged and verified the result.
 
 ### Errors encountered and how we fixed them
 
@@ -125,18 +125,17 @@ Full documentation with GitLab links and NumPy-style docstrings is in [`docs/`](
 
 ---
 
-## Recommended Git Commit History
+## Git Commit History
 
 ```
 git log --oneline
 
-a1b2c3d docs: add getConvergedReason NumPy docstring and source mapping
-d4e5f6g docs: add setTolerances NumPy docstring and source mapping
-h7i8j9k docs: add setObjectiveGradient NumPy docstring and source mapping
-l0m1n2o notebook: add resolution comparison and convergence plot
-p3q4r5s notebook: add 3D surface and 2D contour visualizations
-t6u7v8w notebook: add tutorial_presentation.ipynb scaffold
-x9y0z1a feat: complete MinSurfSolver with boundary conditions and L-BFGS
-b2c3d4e feat: add MinSurfSolver class skeleton and initial point
-c3d4e5f init: project structure setup
+f9061b3 (HEAD -> main) docs: add README with problem description, usage, and AI translation experience
+556d4b3 docs: add M4 NumPy docstrings for setObjectiveGradient, setTolerances, getConvergedReason
+054c526 docs: add M2 source mapping for setObjectiveGradient, setTolerances, getConvergedReason
+806e27e feat: add tutorial_module.py
+63bfe96 Initial commit
 ```
+
+> **Note:** Duplicate commits (`89c097e`, `01e9293`) were squashed for clarity.  
+> To clean up locally: `git rebase -i 63bfe96`
